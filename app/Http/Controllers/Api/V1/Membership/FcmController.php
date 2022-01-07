@@ -28,7 +28,7 @@ class FcmController
         ]);
     }
 
-    public function test()
+    public function send()
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();

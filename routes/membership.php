@@ -11,6 +11,7 @@ Route::group([], function () {
     Route::post('login', [LoginController::class, 'login']);
     Route::middleware('auth:sanctum')->group(function () {
         Route::patch('fcm', [FcmController::class, 'store']);
+        Route::post('fcm/send', [FcmController::class, 'send']);
         Route::get('user', function (Request $request) {
             return $request->user();
         });
