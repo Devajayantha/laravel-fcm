@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\V1\Membership;
 
 use Illuminate\Http\Request;
 use App\Models\FcmToken;
+use App\Notifications\FcmStarter;
+use Illuminate\Support\Facades\Auth;
 
 class FcmController
 {
@@ -24,5 +26,13 @@ class FcmController
         return response()->json([
             'data' => new \stdClass()
         ]);
+    }
+
+    public function test()
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        $user->notify(new FcmStarter());
     }
 }
