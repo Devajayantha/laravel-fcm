@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1\Membership;
 use Illuminate\Http\Request;
 use App\Models\FcmToken;
 use App\Notifications\FcmStarter;
+use App\Service\Fcm;
 use Illuminate\Support\Facades\Auth;
 
 class FcmController
@@ -28,11 +29,16 @@ class FcmController
         ]);
     }
 
-    public function send()
-    {
+    public function send()    {
+
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        $user->notify(new FcmStarter());
+        Fcm::create(
+            $user,
+            'registrasi',
+            'bodynya',
+            'registered'
+        );
     }
 }

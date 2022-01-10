@@ -7,6 +7,7 @@ use App\Channels\Messages\TextMessage;
 use App\Infrastructure\Notifications\CanSendFcmDatabase;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\Fcm\FcmChannel;
 use NotificationChannels\Fcm\FcmMessage;
@@ -14,6 +15,48 @@ use NotificationChannels\Fcm\FcmMessage;
 class FcmStarter extends Notification implements ShouldQueue, CanSendFcmDatabase
 {
     use Queueable;
+
+    /**
+     * @var \Illuminate\Database\Eloquent\Model
+     */
+    protected $model;
+
+    /**
+     * @var string
+     */
+    protected $title;
+
+    /**
+     * @var string
+     */
+    protected $body;
+
+    /**
+     * @var string|null
+     */
+    protected $type;
+
+    /**
+     * Undocumented function
+     *
+     * @param \Illuminate\Database\Eloquent\Model $model
+     * @param String $body
+     * @param String $title
+     * @param String|null $type
+     * @param \Illuminate\Database\Eloquent\Model|null $receive
+     */
+    public function __construct(
+        Model $model,
+        String $body,
+        String $title,
+        String $type = null,
+        Model $receive = null
+    ) {
+        $this->model = $model;
+        $this->body = $body;
+        $this->title = $title;
+        $this->type = $type;
+    }
 
     /**
      * Get the notification's delivery channels.
@@ -30,10 +73,10 @@ class FcmStarter extends Notification implements ShouldQueue, CanSendFcmDatabase
     {
         return FcmMessage::create()
             ->setData([
-                'body' => "Member baru atas nama [Pelanggan Pertama] dari lembaga [Citra Sementara] baru saja bergabung di sistem.",
+                'body' => $this->body,
+                'title' => $this->title,
                 'customer_id' => "1",
-                'title' => "Member Terdaftar",
-                'type'  => "registered"
+                'type'  => $this->type
             ]);
     }
 
@@ -43,11 +86,10 @@ class FcmStarter extends Notification implements ShouldQueue, CanSendFcmDatabase
     public function toDatabase($notifiable): TextMessage
     {
         return new TextMessage([
-            'body' => "Member baru atas nama [Pelanggan Pertama] dari lembaga [Citra Sementara] baru saja bergabung di sistem.",
+            'body' => $this->body,
+            'title' => $this->title,
             'customer_id' => "1",
-            'title' => "Member Terdaftar",
-            'type'  => "registered"
+            'type'  => $this->type
         ]);
     }
-
 }

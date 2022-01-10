@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 class DatabaseChannel
 {
     /**
-     * Undocumented function
+     * Send the given notification.
      *
      * @param mixed $notifiable
      * @param \App\Infrastructure\Notifications\CanSendFcmDatabase $notification
