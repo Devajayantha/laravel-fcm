@@ -2,6 +2,9 @@
 
 namespace App\Infrastructure\Contracts;
 
+/**
+ * @see \Illuminate\Notifications\RoutesNotifications
+ */
 interface HasRoutesNotifications
 {
     /**
@@ -29,11 +32,4 @@ interface HasRoutesNotifications
      * @return mixed
      */
     public function routeNotificationFor($driver, $notification = null);
-
-    /**
-     * Get the value of the model's primary key.
-     *
-     * @return mixed
-     */
-    public function getNotificationIdentifier();
 }

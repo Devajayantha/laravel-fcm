@@ -33,11 +33,12 @@ class FcmController
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        Fcm::create(
-            $user,
-            'registrasi',
-            'bodynya',
-            'registered'
-        );
+        $input = [
+            'title' => 'judul nya ini',
+            'body' => 'body nya ini',
+            'data_type' => 'registered'
+        ];
+
+        Fcm::create($user,$input);
     }
 }

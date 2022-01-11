@@ -52,9 +52,4 @@ class User extends Authenticatable implements HasRoutesNotifications
     {
         return $this->currentAccessToken();
     }
-
-    public function getNotificationIdentifier()
-    {
-        return $this->getKey();
-    }
 }
