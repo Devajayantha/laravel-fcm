@@ -17,26 +17,28 @@ class DatabaseChannel
      */
     public function send($notifiable, CanSendFcmDatabase $notification)
     {
-        $message = $notification->toDatabase($notifiable);
+        $notification = $notification->toDatabase($notifiable);
 
-        if (empty($message)) {
-            return;
-        }
+        $notification->save();
 
-        DB::beginTransaction();
-        try {
-            /** @var \App\Models\Notification $notification */
-            $notification = Notification::create([
-                'body' => $message->content['body'],
-                'title' => $message->content['title'],
-                'type' => $message->content['type'],
-            ]);
+        // if (empty($message)) {
+        //     return;
+        // }
 
-            DB::commit();
-        } catch (\Throwable $th) {
-            throw $th;
+        // DB::beginTransaction();
+        // try {
+        //     /** @var \App\Models\Notification $notification */
+        //     $notification = Notification::create([
+        //         'body' => $message->content['body'],
+        //         'title' => $message->content['title'],
+        //         'type' => $message->content['type'],
+        //     ]);
 
-            DB::rollBack();
-        }
+        //     DB::commit();
+        // } catch (\Throwable $th) {
+        //     throw $th;
+
+        //     DB::rollBack();
+        // }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Infrastructure\Contracts\HasRoutesNotifications;
 use App\Notifications\FcmStarter;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
@@ -9,19 +10,20 @@ use Illuminate\Support\Facades\Log;
 class Fcm
 {
     /**
-     * Undocumented function
+     * Create a broadcast to send FCM Notification.
      *
-     * @param \Illuminate\Database\Eloquent\Model $model
-     * @param String $title
-     * @param String $body
-     * @param String|null $type
+     * @param \App\Infrastructure\Contracts\HasRoutesNotifications $model
+     * @param string $title
+     * @param string $body
+     * @param string|null $type
      * @param \Illuminate\Database\Eloquent\Model|null $receive
+     *
      * @return void
      */
     public static function create(
-        Model $model,
-        String $title,
-        String $body,
+        HasRoutesNotifications $model,
+        string $title,
+        string $body,
         $type = null,
         $receive = null
     ){
@@ -35,27 +37,27 @@ class Fcm
     /**
      * Create a log info after send FCM notification.
      *
-     * @param \Illuminate\Database\Eloquent\Model $model
-     * @param String $title
-     * @param String $body
-     * @param String|null $type
-     * @param \Illuminate\Database\Eloquent\Model|null $receive
+     * @param \App\Infrastructure\Contracts\HasRoutesNotifications $model
+     * @param string $title
+     * @param string $body
+     * @param string|null $type
+     * @param \Illuminate\Database\Eloquent\Model|null $received
      *
      * @return void
      */
     protected static function createLog(
-        Model $model,
-        String $title,
-        String $body,
+        HasRoutesNotifications $model,
+        string $title,
+        string $body,
         $type = null,
-        $receive = null
+        Model $received = null
     ) {
         Log::info(sprintf('%s notification class was sent a FCM message', static::class), [
             'title' => $title,
             'body' => $body,
             'notification_type' => $body,
-            'sender_id' => $model->getKey(),
-            'receive_id' => optional($receive)->getKey(),
+            'sender_id' => $model->getNotificationIdentifier(),
+            'received_id' => optional($received)->getKey(),
         ]);
     }
 }

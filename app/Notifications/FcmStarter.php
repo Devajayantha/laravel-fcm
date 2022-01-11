@@ -3,8 +3,9 @@
 namespace App\Notifications;
 
 use App\Channels\DatabaseChannel;
-use App\Channels\Messages\TextMessage;
+use App\Infrastructure\Contracts\HasRoutesNotifications;
 use App\Infrastructure\Notifications\CanSendFcmDatabase;
+use App\Models\Notification as ModelsNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +13,9 @@ use Illuminate\Notifications\Notification;
 use NotificationChannels\Fcm\FcmChannel;
 use NotificationChannels\Fcm\FcmMessage;
 
+/**
+ * @see \App\Service\Fcm
+ */
 class FcmStarter extends Notification implements ShouldQueue, CanSendFcmDatabase
 {
     use Queueable;
@@ -37,25 +41,31 @@ class FcmStarter extends Notification implements ShouldQueue, CanSendFcmDatabase
     protected $type;
 
     /**
-     * Undocumented function
+     * @var \Illuminate\Database\Eloquent\Model|null
+     */
+    protected $received;
+
+    /**
+     * Create a new notification instance.
      *
-     * @param \Illuminate\Database\Eloquent\Model $model
-     * @param String $body
-     * @param String $title
-     * @param String|null $type
-     * @param \Illuminate\Database\Eloquent\Model|null $receive
+     * @param \App\Infrastructure\Contracts\HasRoutesNotifications $model
+     * @param string $body
+     * @param string $title
+     * @param string|null $type
+     * @param \Illuminate\Database\Eloquent\Model|null $received
      */
     public function __construct(
-        Model $model,
-        String $body,
-        String $title,
-        String $type = null,
-        Model $receive = null
+        HasRoutesNotifications $model,
+        string $body,
+        string $title,
+        string $type = null,
+        Model $received = null
     ) {
         $this->model = $model;
         $this->body = $body;
         $this->title = $title;
         $this->type = $type;
+        $this->received = $received;
     }
 
     /**
@@ -69,13 +79,19 @@ class FcmStarter extends Notification implements ShouldQueue, CanSendFcmDatabase
         return [FcmChannel::class, DatabaseChannel::class];
     }
 
+    /**
+     * Get the fcm representation of the notification.
+     *
+     * @param mixed $notifiable
+     * @return \\NotificationChannels\Fcm\FcmMessage
+     */
     public function toFcm($notifiable)
     {
         return FcmMessage::create()
             ->setData([
                 'body' => $this->body,
                 'title' => $this->title,
-                'customer_id' => "1",
+                'received_id' => optional($this->received)->getKey(),
                 'type'  => $this->type
             ]);
     }
@@ -83,13 +99,16 @@ class FcmStarter extends Notification implements ShouldQueue, CanSendFcmDatabase
     /**
      * {@inheritDoc}
      */
-    public function toDatabase($notifiable): TextMessage
+    public function toDatabase($notifiable): ModelsNotification
     {
-        return new TextMessage([
+        $model = new ModelsNotification([
             'body' => $this->body,
             'title' => $this->title,
-            'customer_id' => "1",
             'type'  => $this->type
         ]);
+
+        $model->setUserRelationValue($this->model);
+
+        return $model;
     }
 }

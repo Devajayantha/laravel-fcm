@@ -11,7 +11,7 @@ interface CanSendFcmDatabase
      * get the database representation of the notification.
      *
      * @param  \App\Models\Notification $notifiable
-     * @return \App\Channels\Messages\TextMessage
+     * @return \App\Models\Notification
      */
-    public function toDatabase(Notification $notifiable): TextMessage;
+    public function toDatabase(Notification $notifiable): Notification;
 }
